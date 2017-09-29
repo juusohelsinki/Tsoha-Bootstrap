@@ -48,9 +48,9 @@ require 'app/models/band.php';
     if(count($errors) == 0){
 
     $band->save();
-        Redirect::to('/band' . $band->bandid, array('message' => 'Bändi lisätty onnistuneesti!'));
+        Redirect::to('/band', array('message' => 'Bändi lisätty onnistuneesti!'));
   } else {
-      View::make('band/newband.html', array('errors' => $errors, 'attributes' => $attributes));
+      View::make('band/newband.html', array('errors' => $errors, 'bands' => $attributes));
   }
 
     // Ohjataan käyttäjä lisäyksen jälkeen pelin esittelysivulle

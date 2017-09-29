@@ -14,6 +14,11 @@ $routes->get('/band', function(){
 });
 
 // Bändien listaussivu
+$routes->get('/band/', function(){
+  BandController::index();
+});
+
+// Bändien listaussivu
 $routes->get('/band/new', function(){
   BandController::new();
 });
@@ -31,6 +36,11 @@ $routes->get('/band/:id/edit', function($id){
   // Bändin muokkauslomakkeen esittäminen
   BandController::edit($id);
 });
+
+$routes->post('/band', function(){
+   BandController::store();
+});
+
 $routes->post('/band/:id/edit', function($id){
   // Bändin muokkaaminen
   BandController::update($id);

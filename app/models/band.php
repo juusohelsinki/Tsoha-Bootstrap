@@ -105,7 +105,6 @@ class Band extends BaseModel{
   }
 
   public function validate_bandname(){
-    echo $this->bandname;
     $errors = array();
     if($this->bandname == '' || $this->bandname == null){
       $errors[] = 'Nimi ei saa olla tyhjä!';
