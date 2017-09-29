@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
   <h1>Bändirekisteri</h1>
-
 <div class="alert alert-success">
   {{message}}
 </div>
-
   <table class="table table-striped table-bordered">
     <thead>
       <tr>
         <th>Nimi</th>
-        <th>Kuvaus</th>
+        <th>Genre</th>
         <th>Arvosana</th>
-        <th>Arvostele</th>
+        {% if isloggedin %}
+        <th>Muokkaa</th>
+        {% endif %}
       </tr>
     </thead>
 
@@ -20,9 +20,11 @@
       {% for band in bands %}
         <tr>
           <td><a href="{{base_path}}/band/{{band.bandid}}">{{band.bandname}}</td>
-          <td>{{band.description}}</td>
+          <td>{{band.genre}}</td>
           <td>&#9734;&#9734;&#9734;&#9734;</td>
-          <td><a class="btn btn-default btn-sm" href="{{base_path}}/game/{{band.bandid}}/edit">Arvostele</a></td>
+          {% if isloggedin %}
+          <td><a class="btn btn-default btn-sm" href="{{base_path}}/band/{{band.bandid}}/edit">Muokkaa</a></td>
+          {% endif %}
         </tr>
       {% endfor %}
     </tbody>

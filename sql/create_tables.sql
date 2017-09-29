@@ -11,9 +11,19 @@ CREATE TABLE user_account (
 
 CREATE TABLE band (
     bandID SERIAL PRIMARY KEY,
-    bandName varchar(200),
+    bandname varchar(400),
     description varchar(4000),
-    bandImagePath varchar(500)
+    bandImagePath varchar(500),
+    established integer,
+    homecity varchar(400),
+    country varchar(400),
+    genre varchar(200),
+    linktohomepage varchar(1000),
+    twitter varchar(1000),
+    facebook varchar(1000),
+    myspace varchar(1000),
+    youtube varchar(1000),
+    soundcloud varchar(1000)
 );
 
 /*CREATE TABLE permission (

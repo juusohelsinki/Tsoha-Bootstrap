@@ -19,10 +19,23 @@
       // Lisätään $errors muuttujaan kaikki virheilmoitukset taulukkona
       $errors = array();
 
-      foreach($this->validators as $validator){
+      
+      //foreach($this->validators as $validator){
+        
         // Kutsu validointimetodia tässä ja lisää sen palauttamat virheet errors-taulukkoon
-      }
-
+       $validate_bandname = 'validate_bandname';
+       $errors = array_merge($errors, $this->{$validate_bandname}());
+       $validate_description = 'validate_description';
+       $errors = array_merge($errors, $this->{$validate_description}());
+       $validate_genre = 'validate_genre';
+       $errors = array_merge($errors, $this->{$validate_genre}());
+       $validate_established = 'validate_established';
+       $errors = array_merge($errors, $this->{$validate_established}());
+       $validate_country = 'validate_country';
+       $errors = array_merge($errors, $this->{$validate_country}());
+       $validate_homecity = 'validate_homecity';
+       $errors = array_merge($errors, $this->{$validate_homecity}());
+      //}
       return $errors;
     }
 

@@ -1,7 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
-  <h1>{{bands.bandname}}</h1>
+<h1>{{bands.bandname}}</h1>
 
-  <p>{{bands.description}}</p>
+<p><b>Genre:</b> {{bands.genre}}</p>
+
+<p><b>Perustamisvuosi:</b> {{bands.established}}</p>
+
+<p><b>Maa:</b> {{bands.country}}</p>
+
+<p><b>Kotikaupunki:</b> {{bands.homecity}}</p>
+
+<p><b>Kuvaus:</b><br>{{bands.description}}</p>
 
 {% endblock %}

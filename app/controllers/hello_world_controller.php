@@ -18,9 +18,14 @@ require 'app/models/band.php';
 
     public static function sandbox(){
       // Testaa koodiasi täällä
-          $bands = Band::all();
+       $doom = new Band(array(
+    'bandname' => 'JJIJJIJ',
+    'description' => ''
+  ));
+  $errors = $doom->errors();
 
-     View::make('band/index.html', array('bands' => $bands));
+  Kint::dump($errors);
+     
 
 //    $rollarit = Band::find(1);
 
