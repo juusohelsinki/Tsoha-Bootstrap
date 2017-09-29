@@ -13,7 +13,7 @@ class UserController extends BaseController{
     }else{
       $_SESSION['user_accountid'] = $user->user_accountid;
 
-      Redirect::to('/', array('message' => 'Tervetuloa takaisin ' . $user->user_accountid . '!'));
+      Redirect::to('/', array('message' => 'Tervetuloa takaisin ' . $user->name . '!'));
     }
   }
 }
