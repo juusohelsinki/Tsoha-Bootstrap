@@ -1,7 +1,7 @@
 <?php
 class User extends BaseModel{
 
-public $user_accountid, $username, $email, $usertype, $name, $password;
+public $user_accountid, $username, $email, $usertype, $firstname, $lastname, $password;
 
   public function __construct($attributes){
     parent::__construct($attributes);
@@ -20,7 +20,8 @@ if($row){
   'username' => $row['username'],
   'email' => $row['email'],
   'usertype' => $row['usertype'],
-  'name' => $row['name'],
+  'firstname' => $row['firstname'],
+  'lastname' => $row['lastname'],
   'password' => $row['password']
 ));
 
@@ -45,7 +46,8 @@ if($row){
   'username' => $row['username'],
   'email' => $row['email'],
   'usertype' => $row['usertype'],
-  'name' => $row['name'],
+  'firstname' => $row['firstname'],
+  'lastname' => $row['lastname'],
   'password' => $row['password']
 ));
 

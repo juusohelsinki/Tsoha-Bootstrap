@@ -27,8 +27,6 @@
        $errors = array_merge($errors, $this->{$validate_bandname}());
        $validate_description = 'validate_description';
        $errors = array_merge($errors, $this->{$validate_description}());
-       $validate_genre = 'validate_genre';
-       $errors = array_merge($errors, $this->{$validate_genre}());
        $validate_established = 'validate_established';
        $errors = array_merge($errors, $this->{$validate_established}());
        $validate_country = 'validate_country';

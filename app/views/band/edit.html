@@ -18,8 +18,12 @@
     </div>
 
             <div class="form-group">
-      <label>Genre</label>
-      <input type="text" name="genre" class="form-control" value="{{bands.genre}}">
+<label>Genre</label>
+ <select class="form-control" name="genre[]" multiple="">
+     {% for genres in genres %}
+      <option value="{{genres.genreid}}">{{genres.name}}</option>
+    {% endfor %}
+  </select>
     </div>
 
         <div class="form-group">

@@ -13,8 +13,12 @@ class UserController extends BaseController{
     }else{
       $_SESSION['user_accountid'] = $user->user_accountid;
 
-      Redirect::to('/', array('message' => 'Tervetuloa takaisin ' . $user->name . '!'));
+      Redirect::to('/', array('message' => 'Tervetuloa takaisin ' . $user->firstname . ' ' . $user->lastname . '!'));
     }
+  }
+  public static function logout(){
+    $_SESSION['user_accountid'] = null;
+    Redirect::to('/login', array('message' => 'Olet kirjautunut ulos!'));
   }
 }
 ?>

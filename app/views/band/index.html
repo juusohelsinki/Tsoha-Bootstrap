@@ -28,7 +28,7 @@
         <tr>
           <td><a href="{{base_path}}/band/{{band.bandid}}">{{band.bandname}}</td>
           <td>{{band.genre}}</td>
-          <td>&#9734;&#9734;&#9734;&#9734;</td>
+          <td>{{band.stars}}</td>
           {% if isloggedin %}
           <td><a class="btn btn-default btn-sm" href="{{base_path}}/band/{{band.bandid}}/edit">Muokkaa</a></td>
           {% endif %}

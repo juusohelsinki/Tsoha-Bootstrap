@@ -12,4 +12,16 @@
 
 <p><b>Kuvaus:</b><br>{{bands.description}}</p>
 
+<a class="btn btn-default btn-sm" href="{{base_path}}/band/{{bands.bandid}}/review">Kirjoita arvio</a>
+<br><br><br>
+Käyttäjien antamat arvostelut bändille:<br><br>
+{{reviews.review}}
+ {% for review in reviews %}
+          <b>Arvosana: {{review.stars}}</b><br>
+          <p><b>Arvio:</b> {{review.review}}</p>
+          <form method="post" action="{{base_path}}/review/{{review.reviewid}}/destroy" style="display: inline-block;">
+  <button type="submit" class="btn btn-danger">Poista</button>
+</form><br><br>
+      {% endfor %}
+
 {% endblock %}

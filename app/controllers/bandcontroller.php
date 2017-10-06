@@ -20,26 +20,31 @@ require 'app/models/band.php';
     public static function bandinfo($id){
       // make-metodi renderöi app/views-kansiossa sijaitsevia tiedostoja
       $bands = Band::find($id);
-      View::make('band/bandinfo.html', array('bands' => $bands));
+      $reviews = Review::find($id);
+      
+      View::make('band/bandinfo.html', array('bands' => $bands, 'reviews' => $reviews));
 
     }
 
         public static function new(){
       // make-metodi renderöi app/views-kansiossa sijaitsevia tiedostoja
-      View::make('band/newband.html');
+          self::check_logged_in();
+          $genres = Genre::genre();
+      View::make('band/newband.html', array('genres' => $genres));
     }
 
     public static function store(){
+      self::check_logged_in();
     // POST-pyynnön muuttujat sijaitsevat $_POST nimisessä assosiaatiolistassa
     $params = $_POST;
     // Alustetaan uusi Band-luokan olion käyttäjän syöttämillä arvoilla
     $attributes = array(
       'bandname' => $params['bandname'],
       'description' => $params['description'],
-      'genre' => $params['genre'],
       'established' => $params['established'],
       'homecity' => $params['homecity'],
-      'country' => $params['country'] 
+      'country' => $params['country'],
+      'genre' => $params['genre']
     );
 
     $band = new Band($attributes);
@@ -50,7 +55,8 @@ require 'app/models/band.php';
     $band->save();
         Redirect::to('/band', array('message' => 'Bändi lisätty onnistuneesti!'));
   } else {
-      View::make('band/newband.html', array('errors' => $errors, 'bands' => $attributes));
+      $genres = Genre::genre();
+      View::make('band/newband.html', array('errors' => $errors, 'bands' => $attributes, 'genres' => $genres));
   }
 
     // Ohjataan käyttäjä lisäyksen jälkeen pelin esittelysivulle
@@ -58,9 +64,10 @@ require 'app/models/band.php';
   }
 
     public static function edit($id){
-
+    self::check_logged_in();
     $bands = Band::find($id);
-    View::make('band/edit.html', array('bands' => $bands));
+    $genres = Genre::genre();
+    View::make('band/edit.html', array('bands' => $bands, 'genres' => $genres));
 
     $isloggedin = self::get_user_logged_in();
     if(!$isloggedin){
@@ -70,8 +77,50 @@ require 'app/models/band.php';
     }
   }
 
+  public static function review($id){
+    self::check_logged_in();
+    $user_accountid = $_SESSION['user_accountid'];
+    $bands = Band::find($id);
+    View::make('band/review.html', array('bands' => $bands, 'useraccountid' => $user_accountid));
+
+    $isloggedin = self::get_user_logged_in();
+    if(!$isloggedin){
+      View::make('band/index.html', array('bands' => $bands, 'isLoggedIn' => FALSE));
+    } else {
+      View::make('band/index.html', array('bands' => $bands, 'isloggedin' => TRUE));  
+    }
+  }
+
+  public static function storereview($id, $user_accountid){
+    self::check_logged_in();
+    $params = $_POST;
+
+    $attributes = array(
+      'bandid' => $id,
+      'user_accountid' => $user_accountid,
+      'review' => $params['review'],
+      'stars' => $params['stars'],
+    );
+
+    $review = new Review($attributes);
+    //$errors = $review->errors();
+
+
+    /*if(count($errors) > 0){
+      $genres = Genre::genre();
+      View::make('band/edit.html', array('errors' => $errors, 'bands' => $attributes, 'genres' => $genres));
+    }else{*/
+      // Kutsutaan alustetun olion update-metodia, joka päivittää pelin tiedot tietokannassa
+      $review->save();
+
+          Redirect::to('/band', array('message' => 'Arvostelu tallennettu onnistuneesti!'));
+  /*}*/
+  }
+
+
   // Bändin muokkaaminen (lomakkeen käsittely)
   public static function update($id){
+    self::check_logged_in();
     $params = $_POST;
 
     $attributes = array(
@@ -88,8 +137,10 @@ require 'app/models/band.php';
     $band = new Band($attributes);
     $errors = $band->errors();
 
+
     if(count($errors) > 0){
-      View::make('band/edit.html', array('errors' => $errors, 'bands' => $attributes));
+      $genres = Genre::genre();
+      View::make('band/edit.html', array('errors' => $errors, 'bands' => $attributes, 'genres' => $genres));
     }else{
       // Kutsutaan alustetun olion update-metodia, joka päivittää pelin tiedot tietokannassa
       $band->update($id);
@@ -100,6 +151,7 @@ require 'app/models/band.php';
 
   // Pelin poistaminen
   public static function destroy($id){
+    self::check_logged_in();
     // Alustetaan Band-olio annetulla id:llä
     $band = new Band(array('id' => $id));
     // Kutsutaan Band-malliluokan metodia destroy, joka poistaa pelin sen id:llä

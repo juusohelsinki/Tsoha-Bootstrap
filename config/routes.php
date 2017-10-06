@@ -18,7 +18,7 @@ $routes->get('/band/', function(){
   BandController::index();
 });
 
-// Bändien listaussivu
+// Bändien lisäyssivu
 $routes->get('/band/new', function(){
   BandController::new();
 });
@@ -37,6 +37,21 @@ $routes->get('/band/:id/edit', function($id){
   BandController::edit($id);
 });
 
+$routes->get('/band/:id/review', function($id){
+  // Bändin muokkauslomakkeen esittäminen
+  BandController::review($id);
+});
+
+$routes->get('/reviews', function(){
+  // Kaikki arvostelut listana
+  ReviewController::index();
+});
+
+$routes->get('/reviews/', function(){
+  // Kaikki arvostelut listana
+  ReviewController::index();
+});
+
 $routes->post('/band', function(){
    BandController::store();
 });
@@ -46,9 +61,19 @@ $routes->post('/band/:id/edit', function($id){
   BandController::update($id);
 });
 
+$routes->post('/band/:id/:useraccountid/review', function($id,$user_accountid){
+  // Bändin muokkauslomakkeen esittäminen
+  BandController::storereview($id,$user_accountid);
+});
+
 $routes->post('/band/:id/destroy', function($id){
   // Bändin poisto
   BandController::destroy($id);
+});
+
+$routes->post('/review/:id/destroy', function($id){
+  // Arvostelun poisto
+  ReviewController::destroy($id);
 });
 
 $routes->get('/login', function(){
@@ -58,4 +83,7 @@ $routes->get('/login', function(){
 $routes->post('/login', function(){
   // Kirjautumisen käsittely
   UserController::handle_login();
+});
+$routes->post('/logout', function(){
+  UserController::logout();
 });

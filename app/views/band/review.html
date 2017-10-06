@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Kirjoita arvio bändille {{bands.bandname}}</h1>
+
+{% if errors %}
+<div class="alert alert-danger">
+  <ul>
+    {% for error in errors %}
+    <li>{{error}}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+<form method="post" action="{{base_path}}/band/{{bands.bandid}}/{{useraccountid}}/review">
+
+  <div class="form-group">
+    <label>Arvosana</label>
+    <table cellspacing="10">
+      <tr>
+        <td>&nbsp;&nbsp;1&nbsp;&nbsp;</td>
+        <td>&nbsp;&nbsp;2&nbsp;&nbsp;</td>
+        <td>&nbsp;&nbsp;3&nbsp;&nbsp;</td>
+        <td>&nbsp;&nbsp;4&nbsp;&nbsp;</td>
+        <td>&nbsp;&nbsp;5&nbsp;&nbsp;</td>
+      </tr>
+      <tr>
+        <td align="center">
+          <input type="radio" name="stars" value="1" class="form-control">
+        </td>
+        <td align="center">
+          <input type="radio" name="stars" value="2" class="form-control">
+        </td>
+        <td align="center">
+          <input type="radio" name="stars" value="3" class="form-control" checked="checked">
+        </td>
+        <td align="center">
+          <input type="radio" name="stars" value="4" class="form-control">
+        </td>
+        <td align="center">
+          <input type="radio" name="stars" value="5" class="form-control">
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="form-group">
+    <label>Arvio (ei pakollinen)</label>
+    <textarea name="review" class="form-control"></textarea>
+  </div>
+
+  <div class="form-group">
+    <button type="submit" class="btn btn-primary">Tallenna</button>
+  </div>
+</form>
+<form method="post" action="{{base_path}}/" style="display: inline-block;">
+  <button type="submit" class="btn btn-danger">Peruuta</button>
+</form>
+{% endblock %}
