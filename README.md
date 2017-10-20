@@ -9,6 +9,9 @@ Tunnukset testaamista varten:
 Käyttäjätunnus: john@usa.com
 Salasana: Kalle123
 
+Käyttäjätunnus pertti.pasanen@hotmail.com
+Salasana: Kalle123
+
 ## Työn aihe
 
 Työn aiheena on Bänditietokanta, johon käyttäjät voivat käydä kirjoittamassa arvosteluja bändeistä. Tarkempi kuvaus  [dokumentaatiossa](https://github.com/juusohelsinki/Tsoha-Bootstrap/tree/master/doc/dokumentaatio.pdf)
