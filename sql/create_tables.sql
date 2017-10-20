@@ -1,4 +1,5 @@
 -- Lisää CREATE TABLE lauseet tähän tiedostoon
+-- Käyttäjätunnukset
 CREATE TABLE user_account (
     user_accountID SERIAL PRIMARY KEY,
     username varchar(200),
@@ -10,6 +11,7 @@ CREATE TABLE user_account (
     description varchar(400)
 );
 
+-- Bändit
 CREATE TABLE band (
     bandID SERIAL PRIMARY KEY,
     bandname varchar(400),
@@ -27,6 +29,7 @@ CREATE TABLE band (
     soundcloud varchar(1000)
 );
 
+-- Jäsenlista
 CREATE TABLE userband (
     user_accountID int,
     bandID int,
@@ -35,11 +38,13 @@ CREATE TABLE userband (
     PRIMARY KEY(user_accountid, bandid)
 );
 
+-- Genret
 CREATE TABLE genre (
     genreID SERIAL PRIMARY KEY,
     name varchar(4000)
 );
 
+-- Mikä bändi edustaa mitäkin genrejä
 CREATE TABLE bandgenre (
     bandID int,
     genreid int,
@@ -48,6 +53,7 @@ CREATE TABLE bandgenre (
     PRIMARY KEY(bandid, genreid)
 );
 
+-- Bändien arvostelut
 CREATE TABLE review (
     reviewID SERIAL PRIMARY KEY,
     user_accountID int,

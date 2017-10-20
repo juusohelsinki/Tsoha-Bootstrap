@@ -12,16 +12,46 @@
 
 <p><b>Kuvaus:</b><br>{{bands.description}}</p>
 
-<a class="btn btn-default btn-sm" href="{{base_path}}/band/{{bands.bandid}}/review">Kirjoita arvio</a>
-<br><br><br>
+<b>Bändin jäsenet:</b><br>
+{% for member in members %}
+	{{member.fullname}}<br>
+{% endfor %}
+
+<br><br>
+Bändin saamien arvioiden keskiarvo:
+<h2>{{bands.stars}}</h2>
+<br>
+<a class="btn btn-default btn-sm" href="{{base_path}}/review/{{bands.bandid}}/review">Kirjoita arvio</a>
+<br><br>
 Käyttäjien antamat arvostelut bändille:<br><br>
-{{reviews.review}}
+
+
  {% for review in reviews %}
-          <b>Arvosana: {{review.stars}}</b><br>
+          <p><b>Arvosana: {{review.stars}}</b></p>
+		  <p><b>Arvostelija:</b> {{review.userfullname}}</p>
           <p><b>Arvio:</b> {{review.review}}</p>
-          <form method="post" action="{{base_path}}/review/{{review.reviewid}}/destroy" style="display: inline-block;">
-  <button type="submit" class="btn btn-danger">Poista</button>
-</form><br><br>
+         
+         {% if user_logged_in.user_accountid == review.user_accountid %}
+         <!-- Osio näytetään vain, jos kyseinen käyttäjä on itse kirjoittanut arvion -->
+          	<table style="border-collapse:separate; 
+         }
+         }
+border-spacing:5px;">
+        <tr>
+          <td>
+                <form method="post" action="{{base_path}}/review/{{review.reviewid}}/{{bands.bandid}}/edit" style="display: inline-block;">
+            <button type="submit" class="btn btn-primary">Muokkaa</button>
+        </form>
+          </td>
+          <td>
+          	 <form method="post" action="{{base_path}}/review/{{review.reviewid}}/destroy" style="display: inline-block;">
+            <button type="submit" class="btn btn-danger">Poista</button>
+        </form>
+          </td>
+        </tr>
+      </table>
+      {% endif %}
+  <br><br>
       {% endfor %}
 
 {% endblock %}

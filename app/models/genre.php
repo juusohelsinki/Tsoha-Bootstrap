@@ -7,6 +7,7 @@ class Genre extends BaseModel{
     parent::__construct($attributes);
   }
 
+// Haetaan kaikki genret genre-taulukosta
   public static function genre(){
     // Alustetaan kysely tietokantayhteydellämme
     $query = DB::connection()->prepare('SELECT * FROM genre');
@@ -19,17 +20,18 @@ class Genre extends BaseModel{
     // Käydään kyselyn tuottamat rivit läpi
     foreach($rows as $row){
 
-      // Tämä on PHP:n hassu syntaksi alkion lisäämiseksi taulukkoon :)
       $genres[] = new Genre(array(
         'genreid' => $row['genreid'],
         'name' => $row['name']
       ));
     }
 
+// Palautetaan lista genreistä.
     return $genres;
   }
 
-    public static function get_genre_name($id){
+// Haetaan genren id:tä vastaava genren nimi.
+  public static function get_genre_name($id){
     // Alustetaan kysely tietokantayhteydellämme
     $query = DB::connection()->prepare('SELECT * FROM genre WHERE genreid = :genreid LIMIT 1');
     $query->execute(array('genreid' => $id));
@@ -40,9 +42,10 @@ class Genre extends BaseModel{
 
     if($row){
       $genrename = $row['name'];
-      }
+    }
 
-      return $genrename;
-}
+// Palautetaan genren nimi.
+    return $genrename;
+  }
 }
 ?>

@@ -1,9 +1,16 @@
 <?php
 
+// Etusivu / Bändien listaussivu
   $routes->get('/', function() {
     BandController::index();
   });
 
+// Etusivu / Bändien listaussivu
+  $routes->post('/', function() {
+    BandController::index();
+  });
+
+// Sandbox
   $routes->get('/hiekkalaatikko', function() {
     HelloWorldController::sandbox();
   });
@@ -18,11 +25,12 @@ $routes->get('/band/', function(){
   BandController::index();
 });
 
-// Bändien lisäyssivu
+// Uuden bändin lisäyssivu
 $routes->get('/band/new', function(){
   BandController::new();
 });
 
+// Bändin tietojen päivittäminen
 $routes->post('/band/update', function(){
   BandController::update();
 });
@@ -32,58 +40,92 @@ $routes->get('/band/:id', function($id){
   BandController::bandinfo($id);
 });
 
+// Bändin muokkauslomakkeen esittäminen
 $routes->get('/band/:id/edit', function($id){
-  // Bändin muokkauslomakkeen esittäminen
   BandController::edit($id);
 });
 
-$routes->get('/band/:id/review', function($id){
-  // Bändin muokkauslomakkeen esittäminen
-  BandController::review($id);
+// Bändin jäsenten listaus / muokkaussivu
+$routes->get('/band/:id/editmembers', function($id){
+  BandMemberController::edit($id);
 });
 
+  // Bändin arvostelulomakkeen esittäminen
+$routes->get('/review/:id/review', function($id){
+  ReviewController::review($id);
+});
+
+// Kaikki arvostelut listana
 $routes->get('/reviews', function(){
-  // Kaikki arvostelut listana
   ReviewController::index();
 });
 
+  // Kaikki arvostelut listana
 $routes->get('/reviews/', function(){
-  // Kaikki arvostelut listana
   ReviewController::index();
 });
 
+  // Lista käyttäjän omista bändeistä
+$routes->get('/ownbands', function(){
+  BandMemberController::memberbands();
+});
+
+// Bändin tietojen tallentaminen
 $routes->post('/band', function(){
    BandController::store();
 });
 
+  // Bändin muokkaussivu
 $routes->post('/band/:id/edit', function($id){
-  // Bändin muokkaaminen
   BandController::update($id);
 });
 
-$routes->post('/band/:id/:useraccountid/review', function($id,$user_accountid){
-  // Bändin muokkauslomakkeen esittäminen
-  BandController::storereview($id,$user_accountid);
+  // Bändin arvostelun tallentaminen
+$routes->post('/review/:id/:useraccountid/review', function($id,$user_accountid){
+  ReviewController::storereview($id,$user_accountid);
 });
 
-$routes->post('/band/:id/destroy', function($id){
-  // Bändin poisto
-  BandController::destroy($id);
-});
-
-$routes->post('/review/:id/destroy', function($id){
   // Arvostelun poisto
+$routes->post('/review/:id/destroy', function($id){
   ReviewController::destroy($id);
 });
 
-$routes->get('/login', function(){
+// Arvostelun muokkaaminen
+$routes->post('/review/:id/:bandid/edit', function($id,$bandid){
+  ReviewController::edit($id,$bandid);
+});
+
+  // Arvostelun päivittäminen
+$routes->post('/review/:id/:bandid/update', function($id, $bandid){
+  ReviewController::update($id,$bandid);
+});
+
+  // Bändin poisto
+$routes->post('/band/:id/destroy', function($id){
+  BandController::destroy($id);
+});
+
+  // Jäsenen poistaminen bändistä
+$routes->post('/member/:id/:useraccountid/destroy', function($id,$user_accountid){
+  BandMemberController::destroy($id,$user_accountid);
+});
+
+  // Jäsenen lisääminen bändiin
+$routes->post('/member/addmember', function(){
+  BandMemberController::addmember();
+});
+
   // Kirjautumislomakkeen esittäminen
+$routes->get('/login', function(){
   UserController::login();
 });
-$routes->post('/login', function(){
+
   // Kirjautumisen käsittely
+$routes->post('/login', function(){
   UserController::handle_login();
 });
+
+// Uloskirjautuminen
 $routes->post('/logout', function(){
   UserController::logout();
 });

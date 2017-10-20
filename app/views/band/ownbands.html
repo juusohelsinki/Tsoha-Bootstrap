@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Bändirekisteri</h1>
+<h1>Omat bändit</h1>
   {% if message %}
+  <!-- Näyetään jos bändin lisääminen onnistui -->
 <div class="alert alert-success">
   {{message}}
 </div>
@@ -13,7 +14,8 @@
         <th>Genre</th>
         <th>Arvosana</th>
         {% if user_logged_in %}
-        <th>Arvostele</th>
+        <th>Lisää / poista jäseniä</th>
+        <th>Muokkaa</th>
         {% endif %}
       </tr>
     </thead>
@@ -24,19 +26,14 @@
           <td><a href="{{base_path}}/band/{{band.bandid}}">{{band.bandname}}</td>
           <td>{{band.genre}}</td>
           <td>{{band.stars}}</td>
-          {% if user_logged_in %}
-          <!-- Näytetään, jos käyttäjä on kirjautunut sisään -->
-          <td><a class="btn btn-default btn-sm" href="{{base_path}}/review/{{band.bandid}}/review">Anna arvio</a></td>
-          {% endif %}
+          <td><a class="btn btn-default btn-sm" href="{{base_path}}/band/{{band.bandid}}/editmembers">Lisää / poista</a></td>
+          <td><a class="btn btn-default btn-sm" href="{{base_path}}/band/{{band.bandid}}/edit">Muokkaa</a></td>
         </tr>
       {% endfor %}
     </tbody>
   </table>
 
-{% if user_logged_in %}
-<!-- Näytetään, jos käyttäjä on kirjautunut sisään -->
-   <p>
+  <p>
     <a href="{{base_path}}/band/new" class="btn btn-success">Lisää uusi bändi</a>
   </p>
-  {% endif %}
 {% endblock %}

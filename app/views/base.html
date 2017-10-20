@@ -40,10 +40,12 @@
           <ul class="nav navbar-nav">
             <!-- Navigaation linkit -->
             <li><a href="{{base_path}}">Etusivu</a></li>
-            <li><a href="{{base_path}}/reviews">Arvostelut listana</a></li>
+            {% if user_logged_in %}
+            <li><a href="{{base_path}}/ownbands">Omat bändit</a></li>
+            {% endif %}
           </ul>
 
-          {% if isloggedin %}
+          {% if user_logged_in %}
         <form class="navbar-form navbar-right" method="post" action="{{base_path}}/logout">
           <button type="submit" class="btn btn-default">Kirjaudu ulos</button>
         </form>

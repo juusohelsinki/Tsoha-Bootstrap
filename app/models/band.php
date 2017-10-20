@@ -7,13 +7,14 @@ class Band extends BaseModel{
     parent::__construct($attributes);
     $this->validators = array(
       'validate_bandname', 
-      'validate_description',
       'validate_established',
       'validate_homecity',
-      'validate_country'
+      'validate_country',
+      'validate_description'
     );
   }
 
+// Apufunktio, jolla poistetaan genrelistasta {,} ja "-merkit
   public static function genres_trim($rowgenres){
     $genre = "";
     if($rowgenres == "{NULL}"){
@@ -22,6 +23,7 @@ class Band extends BaseModel{
       $genre = "";
       $genres = str_replace("}", "", $rowgenres);
       $genres = str_replace("{", "", $genres);
+      $genres = str_replace("\"", "", $genres);
       $genres = explode(',', $genres);
       foreach($genres as $index){
           $genre .= $index;
@@ -32,9 +34,11 @@ class Band extends BaseModel{
       return $genre;
   }
 
+// Haetaan lista kaikista bändeistä ja järjestetään bändit arvostelujen keskiarvon mukaan suurimmasta pienimpään.
   public static function all(){
     // Alustetaan kysely tietokantayhteydellämme
-    $query = DB::connection()->prepare('SELECT band.*, array_agg(genre.name) AS genres FROM band LEFT JOIN bandgenre INNER JOIN genre ON bandgenre.genreid = genre.genreid ON band.bandid=bandgenre.bandid GROUP BY band.bandid');
+    $query = DB::connection()->prepare('SELECT band.*, array_agg(DISTINCT genre.name) AS genres, AVG(reviewaverage.stars) AS stars
+FROM band LEFT JOIN bandgenre INNER JOIN genre ON bandgenre.genreid = genre.genreid ON band.bandid=bandgenre.bandid LEFT JOIN (SELECT stars, bandid FROM review) reviewaverage ON band.bandid = reviewaverage.bandid GROUP BY band.bandid ORDER BY stars DESC NULLS LAST');
     // Suoritetaan kysely
     $query->execute();
     // Haetaan kyselyn tuottamat rivit
@@ -54,6 +58,7 @@ class Band extends BaseModel{
         'established' => $row['established'],
         'homecity' => $row['homecity'],
         'country' => $row['country'],
+        'stars' => round($row['stars'], 1),
         'genre' => $genre
       ));
     }
@@ -62,9 +67,11 @@ class Band extends BaseModel{
 
   }
 
+// Haetaan yhden bändin tiedot. (id = bandid)
   public static function find($id){
-    $query = DB::connection()->prepare('SELECT band.*, array_agg(genre.name) AS genres 
-FROM band LEFT JOIN bandgenre INNER JOIN genre ON bandgenre.genreid = genre.genreid ON band.bandid=bandgenre.bandid WHERE band.bandid = :bandid GROUP BY band.bandid LIMIT 1;
+    $query = DB::connection()->prepare('SELECT band.*, array_agg(DISTINCT genre.name) AS genres, AVG(reviewaverage.stars) AS stars
+FROM band LEFT JOIN bandgenre INNER JOIN genre ON bandgenre.genreid = genre.genreid ON band.bandid=bandgenre.bandid LEFT JOIN (SELECT stars, bandid FROM review) reviewaverage ON band.bandid = reviewaverage.bandid
+WHERE band.bandid = :bandid GROUP BY band.bandid LIMIT 1;
 ');
     $query->execute(array('bandid' => $id));
 
@@ -81,6 +88,7 @@ FROM band LEFT JOIN bandgenre INNER JOIN genre ON bandgenre.genreid = genre.genr
         'established' => $row['established'],
         'homecity' => $row['homecity'],
         'country' => $row['country'],
+        'stars' => round($row['stars'], 1),
         'genre' => $genre
       ));
 
@@ -90,6 +98,8 @@ FROM band LEFT JOIN bandgenre INNER JOIN genre ON bandgenre.genreid = genre.genr
     return null;
   }
 
+
+// Poistetaan bändi tietokannasta.
   public static function destroy($id){
 
         $query = DB::connection()->prepare('
@@ -106,6 +116,7 @@ FROM band LEFT JOIN bandgenre INNER JOIN genre ON bandgenre.genreid = genre.genr
 
   }
 
+// Päivitetään bändin tiedot tietokannassa ja lisätään bändin genret genre-tauluun.
   public function update($id){
 
     $query = DB::connection()->prepare('UPDATE Band SET (bandname, description, established, homecity, country) = (:bandname, :description, :established, :homecity, :country) WHERE bandid=:bandid');
@@ -131,10 +142,10 @@ foreach($this->genre as $genre){
 
   }
 
-  public function save(){
+  // Lisätään bändi tietokantaan ja listään userband-kantaan kirjautuneen käyttäjän id, sekä bändin id.
+  public function save($user_accountid){
     // Lisätään RETURNING id tietokantakyselymme loppuun, niin saamme lisätyn rivin id-sarakkeen arvon
     $query = DB::connection()->prepare('INSERT INTO Band (bandname, description, established, homecity, country) VALUES (:bandname, :description, :established, :homecity, :country) RETURNING bandid');
-    // Muistathan, että olion attribuuttiin pääse syntaksilla $this->attribuutin_nimi
 
     $query->execute(array(
       'bandname' => $this->bandname, 
@@ -146,65 +157,76 @@ foreach($this->genre as $genre){
 
     $row = $query->fetch();
 
+// Jos bändin lisääminen onnistui, lisätään myös userband-tauluun tiedot
+if($row){
+    $query = DB::connection()->prepare('INSERT INTO userband (user_accountid, bandid) VALUES (:user_accountid, :bandid)');
+
+    $query->execute(array(
+      'user_accountid' => $user_accountid, 
+      'bandid' => $row['bandid'],
+    ));
+
     $this->id = $row['bandid'];
 
+// Lisätään genret, jos niitä on valittuna.
+    if(isset($this->genre)){
     foreach($this->genre as $genre){
       $query = DB::connection()->prepare('INSERT INTO bandgenre (genreid, bandid) VALUES (:genreid, :bandid)');
-    // Muistathan, että olion attribuuttiin pääse syntaksilla $this->attribuutin_nimi
 
     $query->execute(array(
       'genreid' => $genre, 
       'bandid' => $this->id
     ));
+  }
 
     }
+  }
 
   }
 
+// Validaattorit (validate_not_too_short_or_null löytyy base_model.php -tiedostosta)//
+
+  // Bändin nimen validoiminen
   public function validate_bandname(){
-    $errors = array();
-    if($this->bandname == '' || $this->bandname == null){
-      $errors[] = 'Nimi ei saa olla tyhjä!';
-    }
+
+    $errors = $this->validate_not_too_short_or_null('Bändin nimi', $this->bandname, 1);
 
     return $errors;
   }
 
+// Bändin kuvauksen validoiminen
   public function validate_description(){
-    $errors = array();
-    if($this->description == '' || $this->description == null){
-      $errors[] = 'Kuvaus ei saa olla tyhjä';
-    }
+
+    $errors = $this->validate_not_too_short_or_null('Kuvaus', $this->description, 2);
 
     return $errors;
   }
 
+// Bändin perustamisvuoden validoiminen (kokonaisluku, numeroita, ei tyhjä)
   public function validate_established(){
     $errors = array();
-    if($this->established == '' || $this->established == null){
-      $errors[] = 'Perustamisvuosi ei saa olla tyhjä';
-    }
-    if(!is_numeric($this->established)){
-      $errors[] = 'Perustamisvuosi pitää olla numeroja.';
+    $established = $this->established;
+    if($established == '' || $established == null){
+      $errors[] = 'Perustamisvuosi ei saa olla tyhjä.';
+    } else if(!ctype_digit(strval($established))){
+      $errors[] = 'Perustamisvuosi pitää olla kokonaisluku.';
     }
 
     return $errors;
   }
 
+// Bändin kotikaupungin validoiminen
   public function validate_homecity(){
-    $errors = array();
-    if($this->homecity == '' || $this->homecity == null){
-      $errors[] = 'Kotikaupunki ei saa olla tyhjä';
-    }
+
+    $errors = $this->validate_not_too_short_or_null('Kotikaupunki', $this->homecity, 2);
 
     return $errors;
   }
 
+// Bändin kotimaan validoiminen
   public function validate_country(){
-    $errors = array();
-    if($this->country == '' || $this->country == null){
-      $errors[] = 'Maa ei saa olla tyhjä';
-    }
+
+    $errors = $this->validate_not_too_short_or_null('Maa', $this->country, 4);
 
     return $errors;
   }

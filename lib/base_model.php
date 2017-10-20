@@ -1,40 +1,44 @@
 <?php
 
-  class BaseModel{
+class BaseModel{
     // "protected"-attribuutti on käytössä vain luokan ja sen perivien luokkien sisällä
-    protected $validators;
+  protected $validators;
 
-    public function __construct($attributes = null){
+  public function __construct($attributes = null){
       // Käydään assosiaatiolistan avaimet läpi
-      foreach($attributes as $attribute => $value){
+    foreach($attributes as $attribute => $value){
         // Jos avaimen niminen attribuutti on olemassa...
-        if(property_exists($this, $attribute)){
+      if(property_exists($this, $attribute)){
           // ... lisätään avaimen nimiseen attribuuttin siihen liittyvä arvo
-          $this->{$attribute} = $value;
-        }
+        $this->{$attribute} = $value;
       }
     }
+  }
 
-    public function errors(){
-      // Lisätään $errors muuttujaan kaikki virheilmoitukset taulukkona
-      $errors = array();
-
-      
-      //foreach($this->validators as $validator){
-        
-        // Kutsu validointimetodia tässä ja lisää sen palauttamat virheet errors-taulukkoon
-       $validate_bandname = 'validate_bandname';
-       $errors = array_merge($errors, $this->{$validate_bandname}());
-       $validate_description = 'validate_description';
-       $errors = array_merge($errors, $this->{$validate_description}());
-       $validate_established = 'validate_established';
-       $errors = array_merge($errors, $this->{$validate_established}());
-       $validate_country = 'validate_country';
-       $errors = array_merge($errors, $this->{$validate_country}());
-       $validate_homecity = 'validate_homecity';
-       $errors = array_merge($errors, $this->{$validate_homecity}());
-      //}
-      return $errors;
+// Apufunktio lomakkeiden kenttien validoimiseen
+  public static function validate_not_too_short_or_null($name, $value, $length){
+    $errors = array();
+    if($value == '' || $value == null){
+      $errors[] = $name. ' ei saa olla tyhjä!';
+    } else if(strlen($value) < $length){
+      $errors[] = 'Kentän '.$name.' pituuden tulee olla vähintään '.$length.' merkkiä!';
     }
 
+    return $errors;
   }
+
+// Funktio virheiden listaamiseen
+  public function errors(){
+      // Lisätään $errors muuttujaan kaikki virheilmoitukset taulukkona
+    $errors = array();
+
+      foreach($this->validators as $validator){
+
+        $errors = array_merge($errors, $this->{$validator}());
+
+      }
+
+    return $errors;
+  }
+
+}

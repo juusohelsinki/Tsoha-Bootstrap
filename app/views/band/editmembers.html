@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if errors %}
+         <!-- Näytetään, jos kentissä oli puutteita -->
+    <div class="alert alert-danger">
+      <ul>
+        {% for error in errors %}
+          <li>{{error}}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+  {% if message %}
+<!-- Näytetään, jos jäsen on lisätty onnistuneesti -->  
+<div class="alert alert-success">
+  {{message}}
+</div>
+{% endif %}
+<div class="form-group">
+    <h2>{{bands.bandname}} jäsenet:</h2><br>
+    <table style="border-collapse:separate; 
+border-spacing:5px;">
+{% for member in members %}
+  <td>{{member.fullname}}<td>
+   <td><form method="post" action="{{base_path}}/member/{{bands.bandid}}/{{member.user_accountid}}/destroy" style="display: inline-block;">
+  <button type="submit" class="btn btn-danger">Poista jäsen</button>
+</form></td>
+</tr>
+{% endfor %}
+</table>
+</div>
+        <div class="form-group">
+      <label>Lisää uusi jäsen (sähköpostiosoite)</label>
+      <form method="post" action="{{base_path}}/member/addmember">
+      <table style="border-collapse:separate; 
+border-spacing:5px;">
+        <tr>
+          <td>
+      <input type="text" name="username" class="form-control">
+      <input type="hidden" name="bandid" class="form-control" value="{{bands.bandid}}">
+          </td>
+          <td>
+            <button type="submit" class="btn btn-primary">Lisää</button>
+          </td>
+        </tr>
+      </table>
+      </form>
+    </div>
+<br>
+ <form method="get" action="{{base_path}}/ownbands" style="display: inline-block;">
+  <button type="submit" class="btn btn-danger">Peruuta</button>
+</form>
+{% endblock %}

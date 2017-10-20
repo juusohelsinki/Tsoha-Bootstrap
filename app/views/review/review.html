@@ -3,6 +3,7 @@
 <h1>Kirjoita arvio bändille {{bands.bandname}}</h1>
 
 {% if errors %}
+<!-- Näyetään jos puutteita lomakkeessa -->
 <div class="alert alert-danger">
   <ul>
     {% for error in errors %}
@@ -11,7 +12,7 @@
   </ul>
 </div>
 {% endif %}
-<form method="post" action="{{base_path}}/band/{{bands.bandid}}/{{useraccountid}}/review">
+<form method="post" action="{{base_path}}/review/{{bands.bandid}}/{{useraccountid}}/review">
 
   <div class="form-group">
     <label>Arvosana</label>
